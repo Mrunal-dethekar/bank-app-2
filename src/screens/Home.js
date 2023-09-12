@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 
 import React from "react";
 import PrimaryButton from "../components/Buttons/PrimaryButton";
-import { useSelector } from "react-redux";
 
 const Home = ({ navigation }) => {
   const balance = useSelector((state) => state.accounting.balance);
