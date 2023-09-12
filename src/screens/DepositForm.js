@@ -15,22 +15,18 @@ let depositSchema = object({
 const DepositForm = ({ navigation }) => {
   const dispatch = useDispatch();
 
-  const addMoneyHandler = async (value) => {
-    const amount = Number(value.amount);
-    const parsedDeposit = await depositSchema.validate(
-      {
-        amount,
-      },
-      { strict: true }
-    );
-    dispatch(accountActions.addMoney(amount));
+  const addMoneyHandler = ({ amount }) => {
+    dispatch(accountActions.addMoney(Number(amount)));
     navigation.navigate("Home");
   };
 
   return (
     <View style={styles.main}>
-      <Formik initialValues={{ amount: "" }} onSubmit={addMoneyHandler}>
-        {({ handleChange, handleSubmit, values: { amount } }) => (
+      <Formik
+        initialValues={{ amount: "" }}
+        onSubmit={addMoneyHandler}
+        validationSchema={depositSchema}>
+        {({ handleChange, handleSubmit, values: { amount }, errors }) => (
           <>
             <View style={styles.formContainer}>
               <Text style={styles.depositeText}>Deposit Form</Text>
@@ -40,6 +36,9 @@ const DepositForm = ({ navigation }) => {
                 onChangeText={handleChange("amount")}
               />
             </View>
+            {errors.amount ? (
+              <Text style={styles.error}>{errors.amount}</Text>
+            ) : null}
             <View style={styles.btnContainer}>
               <PrimaryButton
                 name='ADD MONEY'
@@ -72,5 +71,9 @@ const styles = StyleSheet.create({
   btnContainer: {
     flexDirection: "row",
     marginTop: 16,
+  },
+  error: {
+    paddingLeft: 12,
+    color: "red",
   },
 });

@@ -17,22 +17,18 @@ const WithdrawalForm = ({ navigation }) => {
 
   const balance = useSelector((state) => state.accounting.balance);
 
-  const withdrawMoneyHandler = async (value) => {
-    const amount = Number(value.amount);
-    const parsedWithdrawal = await withdrawalSchema.validate(
-      {
-        amount,
-      },
-      { strict: true }
-    );
-    dispatch(accountActions.withdrawMoney(amount));
+  const withdrawMoneyHandler = ({ amount }) => {
+    dispatch(accountActions.withdrawMoney(Number(amount)));
     navigation.navigate("Home");
   };
 
   return (
     <View style={styles.main}>
-      <Formik initialValues={{ amount: "" }} onSubmit={withdrawMoneyHandler}>
-        {({ handleChange, handleSubmit, values: { amount } }) => (
+      <Formik
+        initialValues={{ amount: "" }}
+        onSubmit={withdrawMoneyHandler}
+        validationSchema={withdrawalSchema}>
+        {({ handleChange, handleSubmit, values: { amount }, errors }) => (
           <>
             <View style={styles.formContainer}>
               <Text style={styles.withdrawText}>withdrawal Form</Text>
@@ -42,8 +38,11 @@ const WithdrawalForm = ({ navigation }) => {
                 onChangeText={handleChange("amount")}
               />
             </View>
+            {errors.amount ? (
+              <Text style={styles.error}>{errors.amount}</Text>
+            ) : null}
             {balance < amount ? (
-              <Text style={styles.lowBalanceText}>
+              <Text style={styles.error}>
                 Your Balance is less than withdrawal amount
               </Text>
             ) : null}
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginBottom: 24,
   },
-  lowBalanceText: {
+  error: {
     paddingLeft: 12,
     color: "red",
   },
